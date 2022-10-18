@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
@@ -11,21 +11,30 @@ import {
 
 const LS_KEY = 'contacts';
 
-export const App = () => {
-  const [contacts, setContacts] = useState([]);
+export default function App() {
+  const [contacts, setContacts] = useState(() =>
+    JSON.parse(localStorage.getItem(LS_KEY) ?? [])
+  );
   const [filter, setFilter] = useState('');
 
-  const handleAddContact = newContact => {
-    if (contacts.some(({ name }) => name === newContact.name)) {
-      alert(`${newContact.name} is alredy in contacts`);
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify(contacts));
+  }, [contacts]);
 
+  const handleAddContact = newContact => {
+    const normalizedNewName = newContact.name.toLowerCase();
+    if (contacts.some(({ name }) => name.toLowerCase() === normalizedNewName)) {
+      alert(`${newContact.name} is alredy in contacts`);
       return;
     }
-    setContacts(state => [...state, { id: nanoid(), ...newContact }]);
+
+    setContacts(prevState => [...prevState, { id: nanoid(), ...newContact }]);
   };
 
   const handleDeleteContact = contactId => {
-    setContacts(state => state.filter(contact => contact.id !== contactId));
+    setContacts(prevState =>
+      prevState.filter(contact => contact.id !== contactId)
+    );
   };
 
   const filterContacts = () => {
@@ -37,7 +46,6 @@ export const App = () => {
 
   const handleFilterInput = e => {
     setFilter(e.currentTarget.value);
-    // this.filteredList = this.filterContacts(this.state.filter);
   };
 
   return (
@@ -52,4 +60,4 @@ export const App = () => {
       />
     </Box>
   );
-};
+}
