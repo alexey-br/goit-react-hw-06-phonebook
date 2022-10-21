@@ -13,7 +13,7 @@ const LS_KEY = 'contacts';
 
 export default function App() {
   const [contacts, setContacts] = useState(() =>
-    JSON.parse(localStorage.getItem(LS_KEY) ?? [])
+    localStorage.getItem(LS_KEY) ? JSON.parse(localStorage.getItem(LS_KEY)) : []
   );
   const [filter, setFilter] = useState('');
 
