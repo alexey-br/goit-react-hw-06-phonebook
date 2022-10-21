@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import parseLocalStorageData from '../services/parseLocalStorageData';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
@@ -13,7 +14,7 @@ const LS_KEY = 'contacts';
 
 export default function App() {
   const [contacts, setContacts] = useState(() =>
-    localStorage.getItem(LS_KEY) ? JSON.parse(localStorage.getItem(LS_KEY)) : []
+    localStorage.getItem(LS_KEY) ? parseLocalStorageData(LS_KEY) : []
   );
   const [filter, setFilter] = useState('');
 
