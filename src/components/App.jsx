@@ -1,64 +1,62 @@
-import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
-import parseLocalStorageData from '../services/parseLocalStorageData';
+import { useSelector } from 'react-redux';
+// import parseLocalStorageData from '../services/parseLocalStorageData';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
+import { getContacts } from 'redux/selectors';
+import { addContact } from 'redux/contactsSlice';
 import Box from './reusableComponents/Box';
 import {
   HeaderH1,
   HeaderH2,
 } from './reusableComponents/Headers/Headers.styled';
 
-const LS_KEY = 'contacts';
-
 export default function App() {
-  const [contacts, setContacts] = useState(() =>
-    localStorage.getItem(LS_KEY) ? parseLocalStorageData(LS_KEY) : []
-  );
-  const [filter, setFilter] = useState('');
+  const contacts = useSelector(getContacts);
 
-  useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify(contacts));
-  }, [contacts]);
+  // const [contacts, setContacts] = useState(() =>
+  //   localStorage.getItem(LS_KEY) ? parseLocalStorageData(LS_KEY) : []
+  // );
+  // const [filter, setFilter] = useState('');
 
-  const handleAddContact = newContact => {
-    const normalizedNewName = newContact.name.toLowerCase();
-    if (contacts.some(({ name }) => name.toLowerCase() === normalizedNewName)) {
-      alert(`${newContact.name} is alredy in contacts`);
-      return;
-    }
+  // useEffect(() => {
+  //   localStorage.setItem(LS_KEY, JSON.stringify(contacts));
+  // }, [contacts]);
 
-    setContacts(prevState => [...prevState, { id: nanoid(), ...newContact }]);
-  };
+  // const handleAddContact = newContact => {
+  //   const normalizedNewName = newContact.name.toLowerCase();
+  //   if (contacts.some(({ name }) => name.toLowerCase() === normalizedNewName)) {
+  //     alert(`${newContact.name} is alredy in contacts`);
+  //     return;
+  //   }
 
-  const handleDeleteContact = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
-    );
-  };
+  //   setContacts(prevState => [...prevState, { id: nanoid(), ...newContact }]);
+  // };
 
-  const filterContacts = () => {
-    const normalizedFilter = filter.toLocaleLowerCase();
-    return contacts.filter(({ name }) =>
-      name.toLocaleLowerCase().includes(normalizedFilter)
-    );
-  };
+  // const handleDeleteContact = contactId => {
+  //   setContacts(prevState =>
+  //     prevState.filter(contact => contact.id !== contactId)
+  //   );
+  // };
 
-  const handleFilterInput = e => {
-    setFilter(e.currentTarget.value);
-  };
+  // const filterContacts = () => {
+  //   const normalizedFilter = filter.toLocaleLowerCase();
+  //   return contacts.filter(({ name }) =>
+  //     name.toLocaleLowerCase().includes(normalizedFilter)
+  //   );
+  // };
+
+  // const handleFilterInput = e => {
+  //   filter = e.currentTarget.value;
+  // };
 
   return (
     <Box m={4}>
       <HeaderH1>Phonebook</HeaderH1>
-      <ContactForm addContact={handleAddContact} />
+      <ContactForm />
       <HeaderH2>Contacts:</HeaderH2>
-      <Filter text={filter} onInput={handleFilterInput} />
-      <ContactList
-        contacts={filterContacts()}
-        onDeleteContact={handleDeleteContact}
-      />
+      <Filter />
+      <ContactList contacts={contacts} onDeleteContact={addContact} />
     </Box>
   );
 }
